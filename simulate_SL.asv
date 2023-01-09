@@ -1,0 +1,104 @@
+%% Simulate SL and get results
+clear, clc, close all
+rng(666) % For reproducibility
+strvals = [0.1 1 10];
+projectfolder = "C:\Users\user\Desktop\brain_stuff\philipp\anesthesia_SL\";
+cd(projectfolder)
+cd C:\Users\user\Desktop\brain_stuff\philipp\anesthesia_SL
+figdir = projectfolder + "figures\";
+ntrials = 5;
+nsamples = 300/(0.1/1000)+1;
+pinkgenerator = dsp.ColoredNoise('Color', 'pink', 'SamplesPerFrame', nsamples, 'NumChannels', ntrials);
+browngenerator = dsp.ColoredNoise('Color', 'brown', 'SamplesPerFrame', nsamples, 'NumChannels', ntrials);
+whitegenerator = dsp.ColoredNoise('Color', 'white', 'SamplesPerFrame', nsamples, 'NumChannels', ntrials);
+
+noises = {whitegenerator(), pinkgenerator(), browngenerator()};
+noisecolors = ["#BEC2CB", "m", "#D95319"];
+noisenames = ["white", "pink", "brown"];
+
+for j = 1:length(strvals)
+    str = strvals(j);
+    for k = 1:length(noises)
+        for i = 1:ntrials
+            noise = noises{k}(:, i);
+            noise = ((noise - min(noise)) / (max(noise) - min(noise))) * (str - (-str)) + (-str);
+            [x(:, i), y(:, i), time] = SL("I", noise);
+            noisemat(:, i) = noise; % This is ugly...
+        end
+        idx = time > 50;
+        time = time(idx)';
+        x_mean = mean(x(idx, :), 2);
+        x_se = std(x(idx, :), [], 2) / sqrt(ntrials);
+        noise_mean = mean(noisemat(idx, :), 2);
+        noise_se = std(noise(idx, :), [], 2) / sqrt(ntrials);
+        patchnoise = [noise_mean-noise_se; flipud(noise_mean+noise_se)];
+        
+        patchtime = [time; flipud(time)];
+        patchx = [x_mean-x_se; flipud(x_mean+x_se)];
+        
+        y_mean = mean(y(idx, :), 2);
+        y_se = std(y(idx, :), [], 2) / sqrt(ntrials);
+        patchy = [y_mean-y_se; flipud(y_mean+y_se)];
+        
+        % Plot
+        figure;
+        set(gcf, 'Position', [374.6000 343 656.8000 420]);
+        subplot(1,4,1)
+        plot(time, noise_mean, 'Color', noisecolors(k))
+        hold on
+        patch(patchtime, patchnoise, 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'None')
+        subplot(1,4,2)
+        plot(time, x_mean, 'k')
+        hold on
+        patch(patchtime, patchx, 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'None')
+        subplot(1,4,3)
+        plot(time, y, 'g')
+        hold on
+        patch(patchtime, patchy, 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'None')
+        subplot(1,4,4)
+        plot(x_mean, y, 'Color', noisecolors(k))
+        hold on
+        patch(patchx, patchy, 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'None')
+        
+        figname = figdir + noisenames(k) + "_" + num2str(str) + ".png";
+        export_fig(figname, '-transparent', '-r1000')
+        close
+    end
+end
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
