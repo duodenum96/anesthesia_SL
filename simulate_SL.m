@@ -1,7 +1,7 @@
 %% Simulate SL and get results
 clear, clc, close all
 rng(666) % For reproducibility
-strvals = [0.1 1 10];
+strvals = [10 30 50];
 projectfolder = "C:\Users\user\Desktop\brain_stuff\philipp\anesthesia_SL\";
 cd(projectfolder)
 cd C:\Users\user\Desktop\brain_stuff\philipp\anesthesia_SL
@@ -57,22 +57,25 @@ for j = 1:length(strvals)
         hold on
         patch(patchtime, patchx, 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'None')
         xlim([50 100])
+        title('Oscillator 1')
         axis square
         subplot(1,4,3)
         plot(time, y_mean, 'g', 'LineWidth', 1.2)
         hold on
         patch(patchtime, patchy, 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'None')
         xlim([50 100])
+        title('Oscillator 2')
         axis square
         subplot(1,4,4)
         plot(x_mean, y_mean, 'Color', noisecolors(k), 'LineWidth', 1.2)
         hold on
         patch(patchx, patchy, 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'None')
         axis square
+        title('Phase Space')
         
         figname = figdir + noisenames(k) + "_" + strrep(num2str(str), ".", "_") + ".png";
         export_fig(char(figname), '-transparent', '-r1000')
-        saveas(gcf, extractBefore(figname, ".png"))
+%         saveas(gcf, extractBefore(figname, ".png"))
         close
         
     end
