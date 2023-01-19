@@ -2,7 +2,7 @@
 clear, clc, close all
 rng(666) % For reproducibility
 % strvals = [0.1 1 10];
-strvals = logspace(-1, 2, 50);
+strvals = linspace(0.1, 100, 50);
 projectfolder = "C:\Users\user\Desktop\brain_stuff\philipp\anesthesia_SL\";
 cd(projectfolder)
 cd C:\Users\user\Desktop\brain_stuff\philipp\anesthesia_SL
@@ -16,6 +16,7 @@ whitegenerator = dsp.ColoredNoise('Color', 'white', 'SamplesPerFrame', nsamples,
 noises = {whitegenerator(), pinkgenerator(), browngenerator()};
 noisecolors = ["#BEC2CB", "m", "#D95319"];
 noisenames = ["white", "pink", "brown"];
+shading = [0.3010 0.7450 0.9330];
 
 % Get the area of unperturbed circle
 [x, y, time] = SL();
@@ -44,13 +45,13 @@ sepert = std(pertsurf, [], 3) / sqrt(ntrials);
 patchstr = [strvals'; flip(strvals')];
 patchpert = [meanpert + sepert; flipud(meanpert - sepert)];
 for i = 1:3
-    plot(strvals, meanpert(:, i), 'LineWidth', 1.2, 'Color', noisecolors{i})
+    plot(strvals, meanpert(:, i), 'LineWidth', 2, 'Color', noisecolors{i})
     hold on
-    patch(patchstr, patchpert(:, i), 'r', 'FaceAlpha', 0.1, 'EdgeColor', 'None', 'HandleVisibility','off');
+    patch(patchstr, patchpert(:, i), shading, 'FaceAlpha', 0.3, 'EdgeColor', 'None', 'HandleVisibility','off');
 end
 xlabel('Noise strength')
 ylabel('Perturbation')
-legend(["White Noise", "Pink Noise", "Brown Noise"])
+legend(["White Noise", "Pink Noise", "Brown Noise"], 'Location', 'NorthWest')
 figdir = "C:\Users\user\Desktop\brain_stuff\philipp\anesthesia_SL\figures\";
 export_fig(char(figdir + "strvscolor.png"), '-transparent', '-r1000')
 close
@@ -71,6 +72,7 @@ nsamples = 100/(0.1/1000)+1;
 noisecolors = [0.745 0.761 0.796;
     1 0 1;
     0.8500 0.3250 0.0980];
+shading = [0.3010 0.7450 0.9330];
 
 % Get the area of unperturbed circle
 [x, y, time] = SL();
@@ -100,9 +102,9 @@ sepert = std(pertsurf, [], 3) / sqrt(ntrials);
 patchstr = [-plevals'; flip(-plevals')];
 patchpert = [meanpert + sepert; flipud(meanpert - sepert)];
 for i = 1:3
-    plot(-plevals, meanpert(:, i), 'LineWidth', 1.5)
+    plot(-plevals, meanpert(:, i), 'LineWidth', 2)
     hold on
-    patch(patchstr, patchpert(:, i), 'r', 'FaceAlpha', 0.1, 'EdgeColor', 'None', 'HandleVisibility','off');
+    patch(patchstr, patchpert(:, i), shading, 'FaceAlpha', 0.3, 'EdgeColor', 'None', 'HandleVisibility','off');
 end
 xlabel('PLE of noise')
 ylabel('Perturbation')
@@ -110,11 +112,11 @@ legend(["Noise Strength = " + strvals(1), "Noise Strength = " + strvals(2), "Noi
     'Location', 'NorthWest')
 set(gca, 'XDir','reverse')
 
-patch([0 -0.1 -0.1 0], [max(ylim) max(ylim) min(ylim) min(ylim)], noisecolors(1, :), 'FaceAlpha', 0.3, ...
+patch([0 -0.2 -0.2 0], [max(ylim) max(ylim) min(ylim) min(ylim)], noisecolors(1, :), 'FaceAlpha', 0.3, ...
     'EdgeColor', 'None', 'HandleVisibility','off')
-patch([-0.95 -1.05 -1.05 -0.95], [max(ylim) max(ylim) min(ylim) min(ylim)], noisecolors(2, :), 'FaceAlpha', 0.3, ...
+patch([-0.9 -1.1 -1.1 -0.9], [max(ylim) max(ylim) min(ylim) min(ylim)], noisecolors(2, :), 'FaceAlpha', 0.3, ...
     'EdgeColor', 'None', 'HandleVisibility','off')
-patch([-1.9 -2 -2 -1.9], [max(ylim) max(ylim) min(ylim) min(ylim)], noisecolors(3, :), 'FaceAlpha', 0.3, ...
+patch([-1.8 -2 -2 -1.8], [max(ylim) max(ylim) min(ylim) min(ylim)], noisecolors(3, :), 'FaceAlpha', 0.3, ...
     'EdgeColor', 'None', 'HandleVisibility','off')
 xlim([-2 0])
 
